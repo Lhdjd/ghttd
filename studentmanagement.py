@@ -9,7 +9,7 @@ class StudentManager:
             self.conn = pymysql.connect(
                 host="localhost",
                 user="root",          # 改为自己的MySQL账号
-                password="123456",# 改为自己的MySQL密码
+                password="123456",    # 改为自己的MySQL密码
                 database="student_db",
                 charset="utf8mb4",
                 autocommit=False
@@ -24,6 +24,20 @@ class StudentManager:
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         with open("student_log.txt", "a", encoding="utf-8") as f:
             f.write(f"[{now}] {msg}\n")
+
+    # ---------------------- 新增：登录验证功能 ----------------------
+    def login(self, username, password):
+        """从数据库验证账号密码"""
+        sql = "SELECT * FROM user WHERE username=%s AND password=%s"
+        self.cursor.execute(sql, (username, password))
+        user = self.cursor.fetchone()
+        if user:
+            print(f"登录成功！欢迎，{username}")
+            self.write_log(f"用户 {username} 登录系统")
+            return True
+        else:
+            print("用户名或密码错误！")
+            return False
 
     # 1. 添加学生信息 + 录入成绩（双表同时插入）
     def add_student(self, stu_id, name, age, major, chinese, math, english):
@@ -150,6 +164,23 @@ class StudentManager:
 # 主菜单函数
 def main():
     sm = StudentManager()
+
+    # ---------------------- 新增：登录流程 ----------------------
+    print("===== 学生信息管理系统 登录 =====")
+    login_success = False
+    # 最多允许尝试3次登录
+    for _ in range(3):
+        username = input("请输入用户名：")
+        password = input("请输入密码：")
+        if sm.login(username, password):
+            login_success = True
+            break
+    if not login_success:
+        print("登录失败次数过多，系统退出！")
+        sm.close()
+        return
+
+    # 登录成功后才进入主菜单
     while True:
         print("\n======= 学生信息成绩管理系统【双表版】=======")
         print("1. 添加学生（含成绩录入）")
@@ -199,11 +230,11 @@ def main():
 
         elif choice == "0":
             sm.close()
-            print("👋 系统退出成功，再见！")
+            print("系统退出成功，再见！")
             break
 
         else:
-            print("输入无效，请输入0-6的数字！")
+            print("输入无效，请输入 0-6 的数字！")
 
 if __name__ == "__main__":
     main()
