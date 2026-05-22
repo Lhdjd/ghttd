@@ -260,8 +260,6 @@ def main():
         print("1.添加图书  2.查看全部  3.按书号查询")
         print("4.修改图书  5.删除图书  6.借阅图书")
         print("7.归还图书  8.我的借阅  0.退出")
-        choice = input("请输入：")
-
         choice = input("请输入功能编号：")
 
         if choice == "1":
