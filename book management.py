@@ -103,20 +103,22 @@ class bookManager:
             self.conn.rollback()
             print("修改失败")
 
-
     # 5. 删除图书信息
     def delete_book(self, book_id):
         try:
-            # 只需删除学生表数据，成绩表会自动级联删除
+            confirm = input("确定删除此图书？(y/n)：")
+            if confirm != "y":
+                print("已取消删除")
+                return
             sql = "DELETE FROM book WHERE book_id=%s"
-            self.cursor.execute(sql, book_id)
+            self.cursor.execute(sql, (book_id,))
             self.conn.commit()
 
             if self.cursor.rowcount > 0:
-                print("信息及对应成绩已全部删除")
-                self.write_log(f"删除数据：学号{book_id}")
+                print("图书信息已删除")
+                self.write_log(f"删除数据：书号{book_id}")
             else:
-                print("未找到该学生")
+                print("未找到该图书")
         except:
             self.conn.rollback()
             print("删除失败")
@@ -194,7 +196,9 @@ def main():
         print("2. 查看所有图书")
         print("3. 按书号查询图书")
         print("4. 修改图书信息")
-        print("5. 删除学生（含成绩）")
+        print("5. 删除图书信息")
+        print("6. 借阅图书")
+        print("7. 归还图书")
         print("0. 退出系统")
 
         choice = input("请输入功能编号：")
